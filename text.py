@@ -1,5 +1,5 @@
 sherik_name = """
-Sherik topish uchun ariza berish
+Sherik, topish uchun ariza berish
 
 Hozir sizga birnecha savollar beriladi. 
 Har biriga javob bering. 
@@ -49,3 +49,19 @@ sherik_maqsad = """
 🔎 Maqsad: 
 
 Maqsadingizni qisqacha yozib bering."""
+#====================================================
+ish_name = """
+Ish topish uchun ariza berish
+
+Hozir sizga birnecha savollar beriladi. 
+Har biriga javob bering. 
+Oxirida agar hammasi to`g`ri bo`lsa, HA tugmasini bosing va arizangiz Adminga yuboriladi.
+              
+Ismi, Familyangizni kiriting?"""
+
+ish_age = """
+🕑 Yosh: 
+
+Yoshingizni kiriting?
+Masalan, 19"""
+
