@@ -26,3 +26,26 @@ sherik_hudud  = """
 
 Qaysi hududdansiz?
 Viloyat nomi, Toshkent shahar yoki Respublikani kiriting."""
+
+sherik_narx = """
+💰 Narxi:
+
+Tolov qilasizmi yoki Tekinmi?
+Kerak bo`lsa, Summani kiriting?"""
+
+sherik_kasb = """
+👨🏻‍💻 Kasbi: 
+
+Ishlaysizmi yoki o`qiysizmi?
+Masalan, Talaba"""
+
+sherik_vaqti = """
+🕰 Murojaat qilish vaqti: 
+
+Qaysi vaqtda murojaat qilish mumkin?
+Masalan, 9:00 - 18:00"""
+
+sherik_maqsad = """
+🔎 Maqsad: 
+
+Maqsadingizni qisqacha yozib bering."""
