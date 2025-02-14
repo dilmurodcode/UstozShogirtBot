@@ -19,7 +19,7 @@ sherik_aloqa = """
 📞 Aloqa: 
 
 Bog`lanish uchun raqamingizni kiriting?
- Masalan, +998 90 123 45 67"""
+ Masalan, +998941520102"""
 
 sherik_hudud  = """
 🌐 Hudud: 
