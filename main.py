@@ -2,7 +2,7 @@ import asyncio, re
 from typing import Callable, Any, Awaitable, Dict
 
 import aiogram
-from aiogram import Dispatcher, Bot, F, Router
+from aiogram import Dispatcher, Bot, F
 from aiogram.filters import  CommandStart
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
 from aiogram.fsm.state import State, StatesGroup
@@ -31,7 +31,6 @@ class StateClearMiddleware(aiogram.BaseMiddleware):
 
 @dp.message(CommandStart())
 async def catch_command(message: Message):
-    print(message.from_user.id)
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text='Sherik kerak'), KeyboardButton(text='Ish joyi kerak')],
@@ -67,7 +66,6 @@ class RegistrationSherikKerak(StatesGroup):
 
 @dp.message(F.text == 'Sherik kerak')
 async def sherik_kerak(message: Message, state: FSMContext):
-    print("sherik")
     await message.answer(text=sherik_name)
     await state.set_state(RegistrationSherikKerak.name)
 
@@ -130,20 +128,21 @@ async def get_vaqti(message: Message, state: FSMContext):
 async def get_maqsad(message: Message, state: FSMContext):
     await state.update_data(maqsad=message.text, type='friend')
     data = await state.get_data()
-    global info
-    info = data
-    text = f"""
-🏅 Sherik: {data['name'] if data else ''}
-📚 Texnologiya: {data['texnalogiya'] if data else ''}
-🇺🇿 Telegram: @{message.from_user.username} ,{message.from_user.id}
-📞 Aloqa: {data['aloqa'] if data else ''}
-🌐 Hudud: {data['hudud'] if data else ''}
-💰 Narxi: {data['narxi'] if data else ''}
-👨🏻‍💻 Kasbi: {data['kasbi'] if data else ''}
-🕰 Murojaat qilish vaqti: {data['vaqti'] if data else ''}
-🔎 Maqsad: {data['maqsad'] if data else ''}
+    if data:
+        global info
+        info = data
+        text = f"""
+🏅 Sherik: {data['name']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narxi']}
+👨🏻‍💻 Kasbi: {data['kasbi']}
+🕰 Murojaat qilish vaqti: {data['vaqti']}
+🔎 Maqsad: {data['maqsad']}
     """
-    await message.answer(text=text, reply_markup=sherik_button())
+        await message.answer(text=text, reply_markup=sherik_button())
     await state.clear()
 
 # ===========================================================================================
@@ -163,7 +162,6 @@ class RegistrationIshJoyKerak(StatesGroup):
 
 @dp.message(F.text == 'Ish joyi kerak')
 async def ish_kerak(message: Message, state: FSMContext):
-    print("ish")
     await message.answer(text=ish_name)
     await state.set_state(RegistrationIshJoyKerak.name)
 
@@ -241,19 +239,30 @@ async def get_maqsad(message: Message, state: FSMContext):
         info = data
         text = f"""
 Ish joyi kerak\n\n
-👨‍💼 Xodim: {data['name'] }
-🕑 Yosh: {data['age'] }
-📚 Texnologiya: {data['texnalogiya'] }
-🇺🇿 Telegram: @{message.from_user.username} ,{message.from_user.id}
-📞 Aloqa: {data['aloqa'] }
-🌐 Hudud: {data['hudud'] }
-💰 Narxi: {data['narxi'] }
-👨🏻‍💻 Kasbi: {data['kasbi'] }
+👨‍💼 Xodim: {data['name']}
+🕑 Yosh: {data['age']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narxi']}
+👨🏻‍💻 Kasbi: {data['kasbi']}
 🕰 Murojaat qilish vaqti: {data['vaqti'] }
-🔎 Maqsad: {data['maqsad'] }
+🔎 Maqsad: {data['maqsad']}
             """
         await message.answer(text=text, reply_markup=sherik_button())
     await state.clear()
+
+@dp.message(F.text == "Yo'q")
+async def yoq(message: Message):
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text='Sherik kerak'), KeyboardButton(text='Ish joyi kerak')],
+            [KeyboardButton(text='Hodim kerak'), KeyboardButton(text='Ustoz kerak')],
+            [KeyboardButton(text='Shogirt kerak')]
+        ], resize_keyboard=True
+    )
+    await message.answer('Ariznagiz bekor qilindi', reply_markup=keyboard)
 
 @dp.message(F.text == "Ha")
 async def xa(message: Message, state: FSMContext):
@@ -265,15 +274,13 @@ async def xa(message: Message, state: FSMContext):
         ], resize_keyboard=True
     )
     data = info
-    print(data)
     if data and data['type'] == 'work':
-        print(5555555555)
         text = f"""
 Ish joyi kerak\n\n
 👨‍💼 Xodim: {data['name'] }
 🕑 Yosh: {data['age']}
 📚 Texnologiya: {data['texnalogiya']}
-🇺🇿 Telegram: @{message.from_user.username} ,{message.from_user.id}
+🇺🇿 Telegram: @{message.from_user.username}
 📞 Aloqa: {data['aloqa']}
 🌐 Hudud: {data['hudud']}
 💰 Narxi: {data['narxi']}
@@ -284,12 +291,11 @@ Ish joyi kerak\n\n
         await bot.send_message(chat_id=7789196047, text=text)
         await bot.send_message(chat_id=7478155511, text=text)
     if data and data['type'] == 'friend':
-        print(66666666666)
         text = f"""
     Ish joyi kerak\n\n
     👨‍💼 Xodim: {data['name']}
     📚 Texnologiya: {data['texnalogiya']}
-    🇺🇿 Telegram: @{message.from_user.username} ,{message.from_user.id}
+    🇺🇿 Telegram: @{message.from_user.username}
     📞 Aloqa: {data['aloqa']}
     🌐 Hudud: {data['hudud']}
     💰 Narxi: {data['narxi']}
@@ -301,6 +307,8 @@ Ish joyi kerak\n\n
         await bot.send_message(chat_id=7478155511, text=text)
     await message.answer('Arizangiz adminga yuborildi', reply_markup=keyboard)
     await state.clear()
+
+#==============================================================================================
 
 async def main():
     dp.message.middleware(StateClearMiddleware())
