@@ -8,9 +8,8 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, Callback
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from text import sherik_name, sherik_texnalogiya, sherik_aloqa, sherik_hudud, sherik_narx, sherik_vaqti, sherik_maqsad, \
-    sherik_kasb
-from text import ish_name, ish_age
+from text import sherik_name, sherik_texnalogiya, sherik_aloqa, sherik_hudud, sherik_narx, sherik_vaqti, sherik_maqsad, sherik_kasb
+from text import ish_name, ish_age, hodim_idora
 
 bot = Bot(token='7723912045:AAEKwGAvHK62OP9heeGC53JW5_9sp77p-ig')
 dp = Dispatcher()
@@ -289,7 +288,7 @@ Ish joyi kerak\n\n
 🔎 Maqsad: {data['maqsad']}
         """
         await bot.send_message(chat_id=7789196047, text=text)
-        await bot.send_message(chat_id=7478155511, text=text)
+        await bot.send_message(chat_id='@aiogramstart', text=text)
     if data and data['type'] == 'friend':
         text = f"""
     Ish joyi kerak\n\n
@@ -304,11 +303,38 @@ Ish joyi kerak\n\n
     🔎 Maqsad: {data['maqsad']}
             """
         await bot.send_message(chat_id=7789196047, text=text)
-        await bot.send_message(chat_id=7478155511, text=text)
+        await bot.send_message(chat_id='@aiogramstart', text=text)
     await message.answer('Arizangiz adminga yuborildi', reply_markup=keyboard)
     await state.clear()
 
 #==============================================================================================
+
+class RegistrationHodimKerak(StatesGroup):
+    idora = State()
+    texnalogiya = State()
+    aloqa = State()
+    hudud = State()
+    masul = State()
+    murojat_vaqti = State()
+    is_vaqti = State()
+    moash = State()
+    qoshimcha = State()
+
+
+@dp.message(F.text == 'Hodim kerak')
+async def hodim_kerak(message: Message, state: FSMContext):
+    await message.answer(text=hodim_idora)
+    await state.set_state(RegistrationHodimKerak.idora)
+    await message.answer(text='🎓 Idora nomi?')
+
+@dp.message(RegistrationHodimKerak.idora)
+async def name_idora(message: Message, state: FSMContext):
+    await state.update_data(idora=message.text)
+    await message.answer(text=sherik_texnalogiya)
+    await state.set_state(RegistrationHodimKerak.texnalogiya)
+
+
+
 
 async def main():
     dp.message.middleware(StateClearMiddleware())

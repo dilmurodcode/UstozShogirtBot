@@ -65,3 +65,10 @@ ish_age = """
 Yoshingizni kiriting?
 Masalan, 19"""
 
+hodim_idora = """
+Xodim topish uchun ariza berish
+
+Hozir sizga birnecha savollar beriladi. 
+Har biriga javob bering. 
+Oxirida agar hammasi to`g`ri bo`lsa, HA tugmasini bosing va arizangiz Adminga yuboriladi."""
+
