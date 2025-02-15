@@ -7,6 +7,7 @@ from aiogram.filters import  CommandStart
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from pydantic.v1.typing import test_type
 
 from text import sherik_name, sherik_texnalogiya, sherik_aloqa, sherik_hudud, sherik_narx, sherik_vaqti, sherik_maqsad, sherik_kasb
 from text import ish_name, ish_age, hodim_idora
@@ -287,23 +288,46 @@ Ish joyi kerak\n\n
 🕰 Murojaat qilish vaqti: {data['vaqti']}
 🔎 Maqsad: {data['maqsad']}
         """
-        await bot.send_message(chat_id=7789196047, text=text)
+        await bot.send_message(chat_id=8016755758, text=text)
         await bot.send_message(chat_id='@aiogramstart', text=text)
+
     if data and data['type'] == 'friend':
         text = f"""
-    Ish joyi kerak\n\n
-    👨‍💼 Xodim: {data['name']}
-    📚 Texnologiya: {data['texnalogiya']}
-    🇺🇿 Telegram: @{message.from_user.username}
-    📞 Aloqa: {data['aloqa']}
-    🌐 Hudud: {data['hudud']}
-    💰 Narxi: {data['narxi']}
-    👨🏻‍💻 Kasbi: {data['kasbi']}
-    🕰 Murojaat qilish vaqti: {data['vaqti']}
-    🔎 Maqsad: {data['maqsad']}
+Ish joyi kerak\n\n
+👨‍💼 Xodim: {data['name']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narxi']}
+👨🏻‍💻 Kasbi: {data['kasbi']}
+🕰 Murojaat qilish vaqti: {data['vaqti']}
+🔎 Maqsad: {data['maqsad']}
             """
-        await bot.send_message(chat_id=7789196047, text=text)
+        await bot.send_message(chat_id=8016755758, text=text)
         await bot.send_message(chat_id='@aiogramstart', text=text)
+
+    data = info
+    if data and data['type'] == 'hodim':
+        text = f"""
+Hodim kerak:\n
+🏢 Idora: {data['idora']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+✍️ Mas'ul: {data['masul']}
+🕰 Murojaat vaqti: {data['murojat_vaqti']}
+🕰 Ish vaqti: {data['ish_vaqti']}
+💰 Maosh: {data['moash']}
+‼️ Qo`shimcha: {data['qoshimcha']}
+
+        #ishJoyi
+                """
+        await bot.send_message(chat_id=8016755758, text=text)
+        await bot.send_message(chat_id='@aiogramstart', text=text)
+
+
     await message.answer('Arizangiz adminga yuborildi', reply_markup=keyboard)
     await state.clear()
 
@@ -316,7 +340,7 @@ class RegistrationHodimKerak(StatesGroup):
     hudud = State()
     masul = State()
     murojat_vaqti = State()
-    is_vaqti = State()
+    ish_vaqti = State()
     moash = State()
     qoshimcha = State()
 
@@ -327,11 +351,94 @@ async def hodim_kerak(message: Message, state: FSMContext):
     await state.set_state(RegistrationHodimKerak.idora)
     await message.answer(text='🎓 Idora nomi?')
 
+
 @dp.message(RegistrationHodimKerak.idora)
 async def name_idora(message: Message, state: FSMContext):
     await state.update_data(idora=message.text)
     await message.answer(text=sherik_texnalogiya)
     await state.set_state(RegistrationHodimKerak.texnalogiya)
+
+
+@dp.message(RegistrationHodimKerak.texnalogiya)
+async def get_texnalogiya(message: Message, state: FSMContext):
+    await state.update_data(texnalogiya=message.text)
+    await message.answer(text=sherik_aloqa)
+    await state.set_state(RegistrationHodimKerak.aloqa)
+
+
+@dp.message(RegistrationHodimKerak.aloqa)
+async def get_aloqa(message: Message, state: FSMContext):
+    validate_phone_number_pattern = "^\\+?998[0-9]{9}$"
+    if re.match(validate_phone_number_pattern, message.text) != None:
+        await state.update_data(aloqa=message.text)
+        await message.answer(text=sherik_hudud)
+        await state.set_state(RegistrationHodimKerak.hudud)
+    else:
+        await message.answer(text='Siz nomerni xato kiritdingiz\n\nQayta kiriting:')
+        await state.set_state(RegistrationIshJoyKerak.aloqa)
+
+
+@dp.message(RegistrationHodimKerak.hudud)
+async def get_hudud(message: Message, state: FSMContext):
+    await state.update_data(hudud=message.text)
+    await message.answer(text="✍️Mas'ul ism sharifi?")
+    await state.set_state(RegistrationHodimKerak.masul)
+
+
+@dp.message(RegistrationHodimKerak.masul)
+async def get_masul(message: Message, state: FSMContext):
+    await state.update_data(masul=message.text)
+    await message.answer(text=sherik_vaqti)
+    await state.set_state(RegistrationHodimKerak.murojat_vaqti)
+
+@dp.message(RegistrationHodimKerak.murojat_vaqti)
+async def get_murojat_vaqti(message: Message, state: FSMContext):
+    await state.update_data(murojat_vaqti=message.text)
+    await message.answer(text="🕰 Ish vaqtini kiriting?")
+    await state.set_state(RegistrationHodimKerak.ish_vaqti)
+
+@dp.message(RegistrationHodimKerak.ish_vaqti)
+async def get_ish_vaqti(message: Message, state: FSMContext):
+    await state.update_data(ish_vaqti=message.text)
+    await message.answer(text="💰 Maoshni kiriting?")
+    await state.set_state(RegistrationHodimKerak.moash)
+
+@dp.message(RegistrationHodimKerak.moash)
+async def get_moash(message: Message, state: FSMContext):
+    await state.update_data(moash=message.text)
+    await message.answer(text="‼️ Qo`shimcha ma`lumotlar?")
+    await state.set_state(RegistrationHodimKerak.qoshimcha)
+
+
+@dp.message(RegistrationHodimKerak.qoshimcha)
+async def get_qoshimcha(message: Message, state: FSMContext):
+    await state.update_data(qoshimcha=message.text, type='hodim')
+    data = await state.get_data()
+    if data:
+        global info
+        info = data
+        text = f"""
+Hodim kerak:\n
+🏢 Idora: {data['idora']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+✍️ Mas'ul: {data['masul']}
+🕰 Murojaat vaqti: {data['murojat_vaqti']}
+🕰 Ish vaqti: {data['ish_vaqti']}
+💰 Maosh: {data['moash']}
+‼️ Qo`shimcha: {data['qoshimcha']}
+
+#ishJoyi
+        """
+        await message.answer(text=text, reply_markup=sherik_button())
+        await message.answer(text="Barcha ma'lumotlar to'g'rimi?")
+
+    await state.clear()
+
+
+
 
 
 
