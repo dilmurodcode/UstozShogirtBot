@@ -7,10 +7,9 @@ from aiogram.filters import  CommandStart
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-from pydantic.v1.typing import test_type
 
 from text import sherik_name, sherik_texnalogiya, sherik_aloqa, sherik_hudud, sherik_narx, sherik_vaqti, sherik_maqsad, sherik_kasb
-from text import ish_name, ish_age, hodim_idora
+from text import ish_name, ish_age, hodim_idora,ustoz_kerakk,shogirt_kerakk
 
 bot = Bot(token='7723912045:AAEKwGAvHK62OP9heeGC53JW5_9sp77p-ig')
 dp = Dispatcher()
@@ -293,7 +292,7 @@ Ish joyi kerak\n\n
 
     if data and data['type'] == 'friend':
         text = f"""
-Ish joyi kerak\n\n
+Sherik kerak\n\n
 👨‍💼 Xodim: {data['name']}
 📚 Texnologiya: {data['texnalogiya']}
 🇺🇿 Telegram: @{message.from_user.username}
@@ -324,6 +323,42 @@ Hodim kerak:\n
 
         #ishJoyi
                 """
+        await bot.send_message(chat_id=8016755758, text=text)
+        await bot.send_message(chat_id='@aiogramstart', text=text)
+
+    data = info
+    if data and data['type'] == 'ustoz':
+        text = f"""
+Ustoz kerak:\n\n
+🎓 Ustoz: {data['shogirt']}
+🕑 Yosh: {data['yosh']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narx']}
+🏻‍💻 Kasbi: {data['kasbi']}
+🕰 Murojaat qilish vaqti: {data['murojat_vaqti']}
+🔎 Maqsad: {data['maqsad']}
+                    """
+        await bot.send_message(chat_id=8016755758, text=text)
+        await bot.send_message(chat_id='@aiogramstart', text=text)
+
+    data = info
+    if data and data['type'] == 'Dost':
+        text = f"""
+Shogirt kerak:\n\n
+🎓 Shogird: {data['shogirt']}
+🕑 Yosh: {data['yosh']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narx']}
+🏻‍💻 Kasbi: {data['kasbi']}
+🕰 Murojaat qilish vaqti: {data['murojat_vaqti']}
+🔎 Maqsad: {data['maqsad']}
+                            """
         await bot.send_message(chat_id=8016755758, text=text)
         await bot.send_message(chat_id='@aiogramstart', text=text)
 
@@ -437,10 +472,220 @@ Hodim kerak:\n
 
     await state.clear()
 
+#=====================================================================================
+
+class RegistrationUstozKerak(StatesGroup):
+    shogirt = State()
+    yosh = State()
+    texnalogiya = State()
+    aloqa = State()
+    hudud = State()
+    narx = State()
+    kasbi = State()
+    murojat_vaqti = State()
+    maqsad = State()
+
+@dp.message(F.text == 'Ustoz kerak')
+async def ustoz_kerak(message: Message, state: FSMContext):
+    await state.update_data(shogirt=message.text)
+    await message.answer(text=ustoz_kerakk)
+    await state.set_state(RegistrationUstozKerak.shogirt)
+    await message.answer(text='Ism, familiyangizni kiriting?')
+
+@dp.message(RegistrationUstozKerak.shogirt)
+async def get_shogirt(message: Message, state: FSMContext):
+    await state.update_data(texnalogiya=message.text)
+    await message.answer(text=ish_age)
+    await state.set_state(RegistrationUstozKerak.yosh)
 
 
+@dp.message(RegistrationUstozKerak.yosh)
+async def get_yosh(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer(text='Iltimos son kiriting: ')
+    else:
+        await state.update_data(yosh=message.text)
+        await message.answer(text=sherik_texnalogiya)
+        await state.set_state(RegistrationUstozKerak.texnalogiya)
 
 
+@dp.message(RegistrationUstozKerak.texnalogiya)
+async def get_texnalogiya(message: Message, state: FSMContext):
+    await state.update_data(texnalogiya=message.text)
+    await message.answer(text=sherik_aloqa)
+    await state.set_state(RegistrationUstozKerak.aloqa)
+
+
+@dp.message(RegistrationUstozKerak.aloqa)
+async def get_aloqa(message: Message, state: FSMContext):
+    validate_phone_number_pattern = "^\\+?998[0-9]{9}$"
+    if re.match(validate_phone_number_pattern, message.text) != None:
+        await state.update_data(aloqa=message.text)
+        await message.answer(text=sherik_hudud)
+        await state.set_state(RegistrationUstozKerak.hudud)
+    else:
+        await message.answer(text='Siz nomerni xato kiritdingiz\n\nQayta kiriting:')
+        await state.set_state(RegistrationUstozKerak.aloqa)
+
+
+@dp.message(RegistrationUstozKerak.hudud)
+async def get_hudud(message: Message, state: FSMContext):
+    await state.update_data(hudud=message.text)
+    await message.answer(text=sherik_narx)
+    await state.set_state(RegistrationUstozKerak.narx)
+
+@dp.message(RegistrationUstozKerak.narx)
+async def get_narx(message: Message, state: FSMContext):
+    await state.update_data(narx=message.text)
+    await message.answer(text=sherik_kasb)
+    await state.set_state(RegistrationUstozKerak.kasbi)
+
+
+@dp.message(RegistrationUstozKerak.kasbi)
+async def get_kasbi(message: Message, state: FSMContext):
+    await state.update_data(kasbi=message.text)
+    await message.answer(text=sherik_vaqti)
+    await state.set_state(RegistrationUstozKerak.murojat_vaqti)
+
+
+@dp.message(RegistrationUstozKerak.murojat_vaqti)
+async def get_murojat_vaqti(message: Message, state: FSMContext):
+    await state.update_data(murojat_vaqti=message.text)
+    await message.answer(text=sherik_maqsad)
+    await state.set_state(RegistrationUstozKerak.maqsad)
+
+
+@dp.message(RegistrationUstozKerak.maqsad)
+async def get_maqsad(message: Message, state: FSMContext):
+    await state.update_data(maqsad=message.text, type='ustoz')
+    data = await state.get_data()
+    if data:
+        global info
+        info = data
+        text = f"""
+Ustoz kerak:\n\n
+🎓 Ustoz: {data['shogirt']}
+🕑 Yosh: {data['yosh']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narx']}
+🏻‍💻 Kasbi: {data['kasbi']}
+🕰 Murojaat qilish vaqti: {data['murojat_vaqti'] }
+🔎 Maqsad: {data['maqsad']}
+            """
+        await message.answer(text=text, reply_markup=sherik_button())
+        await  message.answer(text="Barcha ma'lumotlar to'g'rimi?")
+    await state.clear()
+
+#==================================================================================================
+
+
+class RegistrationShogirtKerak(StatesGroup):
+    shogirt = State()
+    yosh = State()
+    texnalogiya = State()
+    aloqa = State()
+    hudud = State()
+    narx = State()
+    kasbi = State()
+    murojat_vaqti = State()
+    maqsad = State()
+
+@dp.message(F.text == 'Shogirt kerak')
+async def ustoz_kerak(message: Message, state: FSMContext):
+    await state.update_data(shogirt=message.text)
+    await message.answer(text=shogirt_kerakk)
+    await state.set_state(RegistrationShogirtKerak.shogirt)
+    await message.answer(text='Ism, familiyangizni kiriting?')
+
+@dp.message(RegistrationShogirtKerak.shogirt)
+async def get_shogirt(message: Message, state: FSMContext):
+    await state.update_data(texnalogiya=message.text)
+    await message.answer(text=ish_age)
+    await state.set_state(RegistrationShogirtKerak.yosh)
+
+
+@dp.message(RegistrationShogirtKerak.yosh)
+async def get_yosh(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer(text='Iltimos son kiriting: ')
+    else:
+        await state.update_data(yosh=message.text)
+        await message.answer(text=sherik_texnalogiya)
+        await state.set_state(RegistrationShogirtKerak.texnalogiya)
+
+
+@dp.message(RegistrationShogirtKerak.texnalogiya)
+async def get_texnalogiya(message: Message, state: FSMContext):
+    await state.update_data(texnalogiya=message.text)
+    await message.answer(text=sherik_aloqa)
+    await state.set_state(RegistrationShogirtKerak.aloqa)
+
+
+@dp.message(RegistrationShogirtKerak.aloqa)
+async def get_aloqa(message: Message, state: FSMContext):
+    validate_phone_number_pattern = "^\\+?998[0-9]{9}$"
+    if re.match(validate_phone_number_pattern, message.text) != None:
+        await state.update_data(aloqa=message.text)
+        await message.answer(text=sherik_hudud)
+        await state.set_state(RegistrationShogirtKerak.hudud)
+    else:
+        await message.answer(text='Siz nomerni xato kiritdingiz\n\nQayta kiriting:')
+        await state.set_state(RegistrationShogirtKerak.aloqa)
+
+
+@dp.message(RegistrationShogirtKerak.hudud)
+async def get_hudud(message: Message, state: FSMContext):
+    await state.update_data(hudud=message.text)
+    await message.answer(text=sherik_narx)
+    await state.set_state(RegistrationShogirtKerak.narx)
+
+@dp.message(RegistrationShogirtKerak.narx)
+async def get_narx(message: Message, state: FSMContext):
+    await state.update_data(narx=message.text)
+    await message.answer(text=sherik_kasb)
+    await state.set_state(RegistrationShogirtKerak.kasbi)
+
+
+@dp.message(RegistrationShogirtKerak.kasbi)
+async def get_kasbi(message: Message, state: FSMContext):
+    await state.update_data(kasbi=message.text)
+    await message.answer(text=sherik_vaqti)
+    await state.set_state(RegistrationShogirtKerak.murojat_vaqti)
+
+
+@dp.message(RegistrationShogirtKerak.murojat_vaqti)
+async def get_murojat_vaqti(message: Message, state: FSMContext):
+    await state.update_data(murojat_vaqti=message.text)
+    await message.answer(text=sherik_maqsad)
+    await state.set_state(RegistrationShogirtKerak.maqsad)
+
+
+@dp.message(RegistrationShogirtKerak.maqsad)
+async def get_maqsad(message: Message, state: FSMContext):
+    await state.update_data(maqsad=message.text, type='Dost')
+    data = await state.get_data()
+    if data:
+        global info
+        info = data
+        text = f"""
+Shogirt kerak:\n\n
+🎓 Shogird: {data['shogirt']}
+🕑 Yosh: {data['yosh']}
+📚 Texnologiya: {data['texnalogiya']}
+🇺🇿 Telegram: @{message.from_user.username}
+📞 Aloqa: {data['aloqa']}
+🌐 Hudud: {data['hudud']}
+💰 Narxi: {data['narx']}
+🏻‍💻 Kasbi: {data['kasbi']}
+🕰 Murojaat qilish vaqti: {data['murojat_vaqti'] }
+🔎 Maqsad: {data['maqsad']}
+            """
+        await message.answer(text=text, reply_markup=sherik_button())
+        await  message.answer(text="Barcha ma'lumotlar to'g'rimi?")
+    await state.clear()
 
 
 async def main():
@@ -448,8 +693,6 @@ async def main():
     dp.callback_query.middleware(StateClearMiddleware())
     print('working')
     await dp.start_polling(bot)
-
-
 
 
 if __name__ == "__main__":

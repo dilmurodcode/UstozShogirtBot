@@ -72,3 +72,17 @@ Hozir sizga birnecha savollar beriladi.
 Har biriga javob bering. 
 Oxirida agar hammasi to`g`ri bo`lsa, HA tugmasini bosing va arizangiz Adminga yuboriladi."""
 
+ustoz_kerakk = """
+Ustoz topish uchun ariza berish
+
+Hozir sizga birnecha savollar beriladi. 
+Har biriga javob bering. 
+Oxirida agar hammasi to`g`ri bo`lsa, HA tugmasini bosing va arizangiz Adminga yuboriladi."""
+
+shogirt_kerakk = """
+Shogirt topish uchun ariza berish
+
+Hozir sizga birnecha savollar beriladi. 
+Har biriga javob bering. 
+Oxirida agar hammasi to`g`ri bo`lsa, HA tugmasini bosing va arizangiz Adminga yuboriladi."""
+
